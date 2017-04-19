@@ -24,11 +24,12 @@ export class AppComponent extends React.Component<Props, State> {
                         max={1152}
                         currentTime={this.state.currentTime}
                         progress={400}
-                        onChange={(time:number)=>{
+                        onChange={(time:number, offsetTime:number)=>{
                             this.setState({
                                 currentTime:time
                             } as State);
                         }}
+                        offset={10000}
                     />
                 </div>
             </div>

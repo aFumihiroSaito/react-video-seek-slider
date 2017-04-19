@@ -10,8 +10,9 @@ export interface Props {
     max: number,
     currentTime: number,
     progress?: number,
-    onChange: (time: number) => void,
-    hideHoverTime?: boolean
+    onChange: (time: number, offsetTime: number) => void,
+    hideHoverTime?: boolean,
+    offset?: number,
 }
 
 export interface State {
@@ -35,7 +36,8 @@ export class VideoSeekSlider extends React.Component<Props, State> {
         max: 100,
         currentTime: 0,
         progress: 0,
-        hideHoverTime: false
+        hideHoverTime: false,
+        offset: 0,
     } as Props;
 
     private track: HTMLDivElement;
@@ -83,15 +85,13 @@ export class VideoSeekSlider extends React.Component<Props, State> {
 
         position = position < 0 ? 0 : position;
         position = position > this.state.trackWidth ? this.state.trackWidth : position;
-
         this.setState({
             seekHoverPosition: position
         } as State);
 
         let percent: number = position * 100 / this.state.trackWidth;
         let time: number = +(percent * (this.props.max / 100)).toFixed(0);
-
-        this.props.onChange(time);
+        this.props.onChange(time, (time + this.props.offset));
     }
 
     private setTrackWidthState = (): void => {
@@ -151,7 +151,7 @@ export class VideoSeekSlider extends React.Component<Props, State> {
     }
 
     private secondsToTime(seconds: number): Time {
-        seconds = Math.round(seconds);
+        seconds = Math.round(seconds + this.props.offset);
 
         let hours: number = Math.floor(seconds / 3600);
         let divirsForMinutes: number = seconds % 3600;
@@ -169,12 +169,12 @@ export class VideoSeekSlider extends React.Component<Props, State> {
         let percent: number = this.state.seekHoverPosition * 100 / this.state.trackWidth;
         let time: number = +(percent * (this.props.max / 100)).toFixed(0);
 
-        if (this.props.max < 60) {
-            return '0:' + time;
-        } else if (this.props.max < 3600) {
+        if ((this.props.max + this.props.offset) < 60) {
+            return '00:00:' + (time + this.props.offset);
+        } else if ((this.props.max + this.props.offset) < 3600) {
             let times: Time = this.secondsToTime(time);
 
-            return times.mm + ':' + times.ss;
+            return '00:' + times.mm + ':' + times.ss;
         } else {
             let times: Time = this.secondsToTime(time);
 
