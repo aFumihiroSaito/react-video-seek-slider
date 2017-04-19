@@ -6,6 +6,7 @@ export interface Props {
     progress?: number;
     onChange: (time: number) => void;
     hideHoverTime?: boolean;
+    offset?: number,
 }
 export interface State {
     ready: boolean;
